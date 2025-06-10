@@ -1,0 +1,26 @@
+name: org.boost-cpp-lib
+runtime: org.freedesktop.Platform
+runtime-version: '20.08'
+sdk: org.freedesktop.Sdk
+command: boost-cpp-lib
+finish-args:
+  - --socket=x11
+  - --share=ipc
+modules:
+  - name: boost-cpp-lib
+    buildsystem: cmake
+    sources:
+      - type: archive
+        url: https://dl.bintray.com/boostorg/release/1.76.0/source/boost_1_76_0.tar.gz
+        sha256: 0b9847b9c2ebc122032a660b46452ec9a6f17ee4322fc457f7e9cbfdf5ecbd92
+    build-commands:
+      - mkdir build
+      - cd build
+      - cmake ../boost_1_76_0
+      - make
+      - make install
+    build-options:
+      env:
+        CFLAGS: '-O2 -g'
+        CXXFLAGS: '-O2 -g'
+        LDFLAGS: '-Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now'

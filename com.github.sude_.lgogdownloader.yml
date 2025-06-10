@@ -1,0 +1,105 @@
+app-id: com.github.sude_.lgogdownloader
+runtime: org.kde.Platform
+runtime-version: "6.6"
+sdk: org.kde.Sdk
+base: io.qt.qtwebengine.BaseApp
+base-version: '6.6'
+command: lgogdownloader
+finish-args: # flatpak permissions
+  - --device=all # needed for OpenGL, gamepads and serial/parallel
+  - --share=ipc # needed for X11
+  - --share=network # Needed for IPX and serial over TCP/IP
+  - --socket=x11 # default to X11, as Gnome does not provide SSD
+  - --socket=pulseaudio
+  - --filesystem=home
+cleanup:
+  - "/include"
+  - "/lib/pkgconfig"
+  - "/share/aclocal"
+  - "/share/man"
+  - "*.la"
+  - "*.a"
+  - "/share/doc"
+
+modules:
+  # - name: boost-assert
+  #   buildsystem: cmake
+   
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/boostorg/assert/
+  #       tag: boost-1.83.0
+  # - name: boost-iostreams
+  #   buildsystem: cmake
+   
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/boostorg/iostreams/
+  #       tag: boost-1.83.0
+  # - name: boost-filesystem
+  #   buildsystem: cmake
+   
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/boostorg/filesystem
+  #       tag: boost-1.83.0
+  - name: boost
+    buildsystem: simple
+    build-commands: 
+      - ./bootstrap.sh --prefix=/app --with-libraries=filesystem,iostreams,system,thread,regex,date_time,program_options
+      - ./b2 install 
+    sources:
+      - type: git
+        url: https://github.com/boostorg/boost
+        tag: boost-1.83.0
+  - name: jsoncpp
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/open-source-parsers/jsoncpp.git
+        tag: "1.9.5"
+  - name: libtidy
+    buildsystem: cmake
+    sources:
+      - type: git
+        url: https://github.com/htacg/tidy-html5
+        tag: 5.8.0 
+  # - name: htmlcxx
+  #   buildsystem: autotools
+  #   build-options: 
+  #     ldflags: "-Wl,--no-as-needed" 
+  #     cxxflags: "-std=c++11"
+  #   sources:
+  #     - type: archive
+  #       url: https://sourceforge.net/projects/htmlcxx/files/v0.87/htmlcxx-0.87.tar.gz
+  #       sha1: ac7b56357d6867f649e0f1f699d9a4f0f03a6e80
+  - name: tinyxml2
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/leethomason/tinyxml2
+        tag: 10.0.0
+  - name: librhash
+    buildsystem: simple
+    build-commands:
+      - ./configure --prefix=/app --enable-lib-static
+      - make
+      - make install install-lib-so-link install-pkg-config 
+    sources:
+      - type: git
+        url: https://github.com/rhash/RHash
+        tag: v1.4.4
+  - name: lgogdownloader
+    buildsystem: cmake
+    config-opts:
+
+      - -D USE_QT_GUI=ON
+    sources:
+      - type: git
+        url: https://github.com/Sude-/lgogdownloader
+        branch: master
+      - type: patch
+        path: lgogdownloader.patch
+    # post-install:
+    #   - install -Dm644 128x128.png /app/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png
+    #   - install -Dm644 ${FLATPAK_ID}.desktop -t /app/share/applications/
