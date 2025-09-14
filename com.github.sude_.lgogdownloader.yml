@@ -1,9 +1,9 @@
 app-id: com.github.sude_.lgogdownloader
 runtime: org.kde.Platform
-runtime-version: "6.6"
+runtime-version: "6.9"
 sdk: org.kde.Sdk
 base: io.qt.qtwebengine.BaseApp
-base-version: '6.6'
+base-version: '6.9'
 command: lgogdownloader
 finish-args: # flatpak permissions
   - --device=all # needed for OpenGL, gamepads and serial/parallel
